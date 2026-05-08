@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const dns = require('dns');
 const expressSession = require('express-session');
 const flash = require('connect-flash');
 const path = require('path');
@@ -8,8 +7,6 @@ const path = require('path');
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
-
-dns.setServers(['1.1.1.1', '8.8.8.8']);
 
 const authRoutes = require('./routes/auth');
 const expenseRoutes = require('./routes/expense');

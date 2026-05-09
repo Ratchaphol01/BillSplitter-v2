@@ -60,7 +60,7 @@ exports.login = async (req, res) => {
     const id = user.id;
     req.session.userId = id;
 
-    return res.status(200).redirect('/expense/dashboard');
+    return res.redirect('/expense/dashboard');
   } catch (error) {
     console.log(error);
     return res.status(500).render('login', {

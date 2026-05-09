@@ -3,3 +3,9 @@
 > node index.js
 
 MongoDB connected
+
+> bill-splitter@1.0.0 start
+> node index.js
+
+Server running on port 3000
+MongoDB connected

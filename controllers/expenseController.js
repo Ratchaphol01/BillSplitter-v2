@@ -35,6 +35,10 @@ exports.createGroup = async (req, res) => {
     }
 
     const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(401).json({ message: 'ผู้ใช้ไม่พบ กรุณาเข้าสู่ระบบใหม่' });
+    }
 
     let membersList = [
       { user: userId, name: user.name }
@@ -44,7 +48,7 @@ exports.createGroup = async (req, res) => {
       membersList = membersList.concat(members.map(m => ({
         name: m
       })));
-    } else if (members) {
+    } else if (members && members.length > 0) {
       membersList.push({ name: members });
     }
 
@@ -58,8 +62,8 @@ exports.createGroup = async (req, res) => {
     await group.save();
     res.status(201).json({ message: 'สร้างกลุ่มสำเร็จ', groupId: group._id });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+    console.log('Create Group Error:', error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด: ' + error.message });
   }
 };
 

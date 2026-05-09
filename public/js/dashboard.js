@@ -55,8 +55,13 @@ function removeMember(index) {
 document.getElementById('createGroupForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const groupName = document.getElementById('groupName').value;
-  const groupDescription = document.getElementById('groupDescription').value;
+  const groupName = document.getElementById('groupName').value.trim();
+  const groupDescription = document.getElementById('groupDescription').value.trim();
+
+  if (!groupName) {
+    alert('กรุณากรอกชื่อกลุ่ม');
+    return;
+  }
 
   if (membersList.length === 0) {
     alert('กรุณาเพิ่มสมาชิกอย่างน้อยหนึ่งคน');
@@ -80,13 +85,16 @@ document.getElementById('createGroupForm').addEventListener('submit', async (e) 
 
     if (response.ok) {
       alert(data.message);
+      membersList = [];
+      document.getElementById('createGroupForm').reset();
+      document.getElementById('membersList').innerHTML = '';
       window.location.reload();
     } else {
-      alert(data.message);
+      alert(data.message || 'เกิดข้อผิดพลาด');
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('เกิดข้อผิดพลาด');
+    alert('เกิดข้อผิดพลาด: ' + error.message);
   }
 });
 

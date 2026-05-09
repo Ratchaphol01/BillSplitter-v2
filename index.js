@@ -8,14 +8,24 @@ mongoose.set('strictQuery', false);
 
 const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/final';
 
-mongoose.connect(mongoURI)
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+let isConnected = false;
 
-const PORT = process.env.PORT || 3000;
+const connectToDatabase = async () => {
+  if (isConnected) return;
+  await mongoose.connect(mongoURI);
+  isConnected = true;
+  console.log('MongoDB connected');
+};
 
-const server = app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (process.env.VERCEL !== '1') {
+  const PORT = process.env.PORT || 3000;
+  connectToDatabase().then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  }).catch((err) => console.error('MongoDB connection error:', err));
+} else {
+  connectToDatabase().catch((err) => console.error('MongoDB connection error:', err));
+}
 
-module.exports = server;
+module.exports = app;

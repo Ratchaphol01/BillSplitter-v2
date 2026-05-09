@@ -65,7 +65,8 @@ document.getElementById('addExpenseModal').addEventListener('hidden.bs.modal', (
   document.getElementById('modeSlip').checked = true;
   document.getElementById('slipSection').classList.remove('d-none');
   document.getElementById('manualSection').classList.add('d-none');
-  document.getElementById('slipPreview').classList.add('d-none');
+  document.getElementById('slipPreviewList').classList.add('d-none');
+  document.getElementById('slipImgList').innerHTML = '';
   document.getElementById('slipPlaceholder').classList.remove('d-none');
   document.getElementById('ocrStatus').textContent = '';
   document.getElementById('amountSlip').value = '';
@@ -73,42 +74,58 @@ document.getElementById('addExpenseModal').addEventListener('hidden.bs.modal', (
   document.getElementById('slipUpload').value = '';
 });
 
-// Slip OCR
+// Slip OCR — supports multiple files
 document.getElementById('slipUpload').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
 
   const statusEl = document.getElementById('ocrStatus');
-  const previewEl = document.getElementById('slipPreview');
+  const previewListEl = document.getElementById('slipPreviewList');
   const placeholderEl = document.getElementById('slipPlaceholder');
-  const imgEl = document.getElementById('slipImg');
+  const imgListEl = document.getElementById('slipImgList');
 
-  imgEl.src = URL.createObjectURL(file);
-  previewEl.classList.remove('d-none');
+  imgListEl.innerHTML = '';
+  files.forEach(file => {
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    img.alt = 'slip preview';
+    img.style.cssText = 'max-height:120px; max-width:120px; border-radius:8px; object-fit:cover;';
+    imgListEl.appendChild(img);
+  });
+  previewListEl.classList.remove('d-none');
   placeholderEl.classList.add('d-none');
 
-  statusEl.innerHTML = '<span class="text-muted">กำลังอ่านสลิป...</span>';
+  statusEl.innerHTML = `<span class="text-muted">กำลังอ่านสลิป ${files.length} รูป...</span>`;
 
   try {
-    const base64 = await fileToBase64(file);
-    const response = await fetch('/api/ocr-slip', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64: base64, mimeType: file.type })
-    });
+    const results = await Promise.all(files.map(async (file, i) => {
+      const base64 = await fileToBase64(file);
+      const response = await fetch('/api/ocr-slip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: base64, mimeType: file.type })
+      });
+      const data = await response.json();
+      return { index: i + 1, amount: response.ok ? data.amount : null };
+    }));
 
-    const data = await response.json();
+    const amounts = results.map(r => r.amount).filter(a => a !== null && a > 0);
+    const total = amounts.reduce((sum, a) => sum + a, 0);
 
-    if (!response.ok) {
-      statusEl.innerHTML = `<span class="text-danger">${data.error || 'อ่านสลิปไม่สำเร็จ'}</span>`;
+    if (amounts.length === 0) {
+      statusEl.innerHTML = '<span class="text-warning">ไม่พบยอดเงินจากทุกรูป กรุณากรอกเอง</span>';
       return;
     }
 
-    if (data.amount) {
-      document.getElementById('amountSlip').value = data.amount.toFixed(2);
-      statusEl.innerHTML = `<span class="text-success">อ่านได้ ${data.amount.toFixed(2)} บาท</span>`;
+    document.getElementById('amountSlip').value = total.toFixed(2);
+
+    if (files.length === 1) {
+      statusEl.innerHTML = `<span class="text-success">อ่านได้ ${total.toFixed(2)} บาท</span>`;
     } else {
-      statusEl.innerHTML = '<span class="text-warning">ไม่พบยอดเงิน กรุณากรอกเอง</span>';
+      const lines = results.map(r =>
+        r.amount ? `รูป ${r.index}: ${r.amount.toFixed(2)} บาท` : `รูป ${r.index}: ไม่พบยอด`
+      ).join(' &nbsp;|&nbsp; ');
+      statusEl.innerHTML = `<span class="text-success">รวมทั้งหมด ${total.toFixed(2)} บาท</span><br><small class="text-muted">${lines}</small>`;
     }
   } catch (err) {
     statusEl.innerHTML = '<span class="text-danger">เกิดข้อผิดพลาด</span>';

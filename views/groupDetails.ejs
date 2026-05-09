@@ -147,14 +147,14 @@
             <!-- Slip mode -->
             <div id="slipSection">
               <div class="border rounded p-3 text-center bg-light mb-3" id="slipDropArea" style="cursor:pointer;" onclick="document.getElementById('slipUpload').click()">
-                <input type="file" id="slipUpload" accept="image/*" class="d-none">
+                <input type="file" id="slipUpload" accept="image/*" class="d-none" multiple>
                 <div id="slipPlaceholder">
                   <div style="font-size:2.5rem;">📷</div>
                   <div class="text-muted">คลิกเพื่ออัปโหลดสลิป</div>
-                  <small class="text-muted">รองรับ JPG, PNG</small>
+                  <small class="text-muted">รองรับ JPG, PNG (เลือกได้หลายรูป)</small>
                 </div>
-                <div id="slipPreview" class="d-none">
-                  <img id="slipImg" src="" alt="slip preview" style="max-height:160px; border-radius:8px;">
+                <div id="slipPreviewList" class="d-none">
+                  <div id="slipImgList" class="d-flex flex-wrap gap-2 justify-content-center"></div>
                 </div>
               </div>
               <div id="ocrStatus" class="text-center small mb-3"></div>

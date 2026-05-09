@@ -51,10 +51,16 @@
             <% if (settlements && settlements.length > 0) { %>
               <div class="list-group">
                 <% settlements.forEach(settlement => { %>
-                  <div class="list-group-item">
-                    <strong><%= settlement.from %></strong> ต้องจ่าย 
-                    <strong><%= settlement.to %></strong>
-                    <span class="badge bg-primary float-end"><%= settlement.amount.toFixed(2) %> บาท</span>
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong><%= settlement.from %></strong> ต้องจ่าย
+                      <strong><%= settlement.to %></strong>
+                      <span class="badge bg-primary ms-2"><%= settlement.amount.toFixed(2) %> บาท</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-success"
+                      onclick="openQrModal('<%= settlement.to %>', '<%= settlement.amount.toFixed(2) %>')">
+                      📱 QR
+                    </button>
                   </div>
                 <% }); %>
               </div>
@@ -203,6 +209,32 @@
             <button type="submit" class="btn btn-primary">เพิ่มค่าใช้จ่าย</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- PromptPay QR Modal -->
+  <div class="modal fade" id="qrModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">📱 QR PromptPay</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p class="mb-1 text-muted small">โอนให้ <strong id="qrRecipient"></strong></p>
+          <p class="mb-3 fw-bold fs-5" id="qrAmount"></p>
+          <div class="mb-3">
+            <label for="promptpayPhone" class="form-label text-start w-100">เบอร์ PromptPay ของผู้รับ</label>
+            <input type="tel" class="form-control text-center" id="promptpayPhone"
+              placeholder="0812345678" maxlength="10">
+          </div>
+          <button class="btn btn-success w-100 mb-3" onclick="generateQr()">สร้าง QR</button>
+          <div id="qrImageWrap" class="d-none">
+            <img id="qrImage" src="" alt="QR Code" class="img-fluid rounded" style="max-width:220px;">
+            <p class="text-muted small mt-2">สแกนเพื่อโอนเงินผ่าน PromptPay</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

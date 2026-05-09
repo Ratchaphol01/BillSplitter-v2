@@ -124,6 +124,68 @@ function deleteExpense(expenseId, groupId) {
   }
 }
 
+// PromptPay QR
+let qrAmount = 0;
+
+function openQrModal(recipient, amount) {
+  qrAmount = parseFloat(amount);
+  document.getElementById('qrRecipient').textContent = recipient;
+  document.getElementById('qrAmount').textContent = `${parseFloat(amount).toFixed(2)} บาท`;
+  document.getElementById('promptpayPhone').value = '';
+  document.getElementById('qrImageWrap').classList.add('d-none');
+  new bootstrap.Modal(document.getElementById('qrModal')).show();
+}
+
+function generateQr() {
+  const phone = document.getElementById('promptpayPhone').value.trim();
+  if (!phone || phone.length < 9) {
+    alert('กรุณากรอกเบอร์ PromptPay ให้ถูกต้อง');
+    return;
+  }
+
+  const payload = buildPromptPayPayload(phone, qrAmount);
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(payload)}&size=250x250&ecc=M`;
+
+  const img = document.getElementById('qrImage');
+  img.src = qrUrl;
+  document.getElementById('qrImageWrap').classList.remove('d-none');
+}
+
+function buildPromptPayPayload(phone, amount) {
+  const normalizePhone = (p) => {
+    p = p.replace(/\D/g, '');
+    if (p.startsWith('0')) p = '66' + p.slice(1);
+    return '0066' + (p.startsWith('66') ? p.slice(2) : p);
+  };
+
+  const tag = (id, value) => `${id}${String(value.length).padStart(2, '0')}${value}`;
+
+  const merchantInfo = tag('00', 'A000000677010111') + tag('01', normalizePhone(phone));
+  const amountStr = amount.toFixed(2);
+
+  const body =
+    tag('00', '01') +
+    tag('01', '12') +
+    tag('29', merchantInfo) +
+    tag('53', '764') +
+    tag('54', amountStr) +
+    tag('58', 'TH') +
+    '6304';
+
+  return body + crc16(body);
+}
+
+function crc16(str) {
+  let crc = 0xFFFF;
+  for (let i = 0; i < str.length; i++) {
+    crc ^= str.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) {
+      crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+    }
+  }
+  return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+}
+
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const img = new Image();

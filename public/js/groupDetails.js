@@ -126,9 +126,29 @@ function deleteExpense(expenseId, groupId) {
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      const MAX_PX = 1600;
+      let { width, height } = img;
+
+      if (width > MAX_PX || height > MAX_PX) {
+        const ratio = Math.min(MAX_PX / width, MAX_PX / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg', 0.8).split(',')[1]);
+    };
+
+    img.onerror = reject;
+    img.src = url;
   });
 }

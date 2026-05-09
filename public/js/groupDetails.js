@@ -1,17 +1,35 @@
+// Mode toggle
+document.querySelectorAll('input[name="inputMode"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    const isSlip = document.getElementById('modeSlip').checked;
+    document.getElementById('slipSection').classList.toggle('d-none', !isSlip);
+    document.getElementById('manualSection').classList.toggle('d-none', isSlip);
+  });
+});
+
+// Submit
 document.getElementById('addExpenseForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  const isSlip = document.getElementById('modeSlip').checked;
   const groupId = document.getElementById('groupId').value;
-  const description = document.getElementById('description').value;
-  const amount = document.getElementById('amount').value;
+  const description = document.getElementById('description').value.trim();
   const paidBy = document.getElementById('paidBy').value;
+  const amountRaw = isSlip
+    ? document.getElementById('amountSlip').value
+    : document.getElementById('amountManual').value;
+  const amount = parseFloat(amountRaw);
 
-  // Get selected members
   const checkboxes = document.querySelectorAll('input[name="splitAmong"]:checked');
   const splitAmong = Array.from(checkboxes).map(cb => cb.value);
 
-  if (!description || !amount || !paidBy) {
+  if (!description || !amountRaw || !paidBy) {
     alert('กรุณากรอกรายละเอียด ยอดรวม และ จ่ายโดย');
+    return;
+  }
+
+  if (isNaN(amount) || amount <= 0) {
+    alert('ยอดรวมต้องเป็นตัวเลขมากกว่า 0');
     return;
   }
 
@@ -23,56 +41,36 @@ document.getElementById('addExpenseForm').addEventListener('submit', async (e) =
   try {
     const response = await fetch('/expense/add', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        groupId,
-        description,
-        amount: parseFloat(amount),
-        paidBy,
-        splitAmong
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ groupId, description, amount, paidBy, splitAmong })
     });
 
     const data = await response.json();
 
     if (response.ok) {
       alert(data.message);
-      const modal = bootstrap.Modal.getInstance(document.getElementById('addExpenseModal'));
-      modal.hide();
+      bootstrap.Modal.getInstance(document.getElementById('addExpenseModal')).hide();
       window.location.reload();
     } else {
       alert('Error: ' + data.message);
     }
   } catch (error) {
-    console.error('Error:', error);
     alert('เกิดข้อผิดพลาด: ' + error.message);
   }
 });
 
-function deleteExpense(expenseId, groupId) {
-  if (confirm('คุณแน่ใจหรือว่าต้องการลบค่าใช้จ่ายนี้?')) {
-    fetch(`/expense/${expenseId}`, {
-      method: 'DELETE'
-    })
-    .then(response => response.json())
-    .then(data => {
-      alert(data.message);
-      window.location.reload();
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('เกิดข้อผิดพลาด');
-    });
-  }
-}
-
-// Auto-select all members when form opens
-const modal = document.getElementById('addExpenseModal');
-modal.addEventListener('show.bs.modal', function() {
-  const checkboxes = document.querySelectorAll('input[name="splitAmong"]');
-  checkboxes.forEach(cb => cb.checked = false);
+// Reset form when modal closes
+document.getElementById('addExpenseModal').addEventListener('hidden.bs.modal', () => {
+  document.querySelectorAll('input[name="splitAmong"]').forEach(cb => cb.checked = false);
+  document.getElementById('modeSlip').checked = true;
+  document.getElementById('slipSection').classList.remove('d-none');
+  document.getElementById('manualSection').classList.add('d-none');
+  document.getElementById('slipPreview').classList.add('d-none');
+  document.getElementById('slipPlaceholder').classList.remove('d-none');
+  document.getElementById('ocrStatus').textContent = '';
+  document.getElementById('amountSlip').value = '';
+  document.getElementById('amountManual').value = '';
+  document.getElementById('slipUpload').value = '';
 });
 
 // Slip OCR
@@ -82,15 +80,14 @@ document.getElementById('slipUpload').addEventListener('change', async (e) => {
 
   const statusEl = document.getElementById('ocrStatus');
   const previewEl = document.getElementById('slipPreview');
+  const placeholderEl = document.getElementById('slipPlaceholder');
   const imgEl = document.getElementById('slipImg');
 
-  // Show preview
-  const objectUrl = URL.createObjectURL(file);
-  imgEl.src = objectUrl;
+  imgEl.src = URL.createObjectURL(file);
   previewEl.classList.remove('d-none');
+  placeholderEl.classList.add('d-none');
 
-  statusEl.textContent = 'กำลังอ่านสลิป...';
-  statusEl.className = 'text-muted small';
+  statusEl.innerHTML = '<span class="text-muted">กำลังอ่านสลิป...</span>';
 
   try {
     const base64 = await fileToBase64(file);
@@ -103,24 +100,29 @@ document.getElementById('slipUpload').addEventListener('change', async (e) => {
     const data = await response.json();
 
     if (!response.ok) {
-      statusEl.textContent = data.error || 'อ่านสลิปไม่สำเร็จ';
-      statusEl.className = 'text-danger small';
+      statusEl.innerHTML = `<span class="text-danger">${data.error || 'อ่านสลิปไม่สำเร็จ'}</span>`;
       return;
     }
 
     if (data.amount) {
-      document.getElementById('amount').value = data.amount.toFixed(2);
-      statusEl.textContent = `อ่านได้ ${data.amount.toFixed(2)} บาท`;
-      statusEl.className = 'text-success small';
+      document.getElementById('amountSlip').value = data.amount.toFixed(2);
+      statusEl.innerHTML = `<span class="text-success">อ่านได้ ${data.amount.toFixed(2)} บาท</span>`;
     } else {
-      statusEl.textContent = 'ไม่พบยอดเงินในสลิป กรุณากรอกเอง';
-      statusEl.className = 'text-warning small';
+      statusEl.innerHTML = '<span class="text-warning">ไม่พบยอดเงิน กรุณากรอกเอง</span>';
     }
   } catch (err) {
-    statusEl.textContent = 'เกิดข้อผิดพลาด';
-    statusEl.className = 'text-danger small';
+    statusEl.innerHTML = '<span class="text-danger">เกิดข้อผิดพลาด</span>';
   }
 });
+
+function deleteExpense(expenseId, groupId) {
+  if (confirm('คุณแน่ใจหรือว่าต้องการลบค่าใช้จ่ายนี้?')) {
+    fetch(`/expense/${expenseId}`, { method: 'DELETE' })
+      .then(r => r.json())
+      .then(data => { alert(data.message); window.location.reload(); })
+      .catch(() => alert('เกิดข้อผิดพลาด'));
+  }
+}
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {

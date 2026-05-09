@@ -129,28 +129,48 @@
         <form id="addExpenseForm">
           <input type="hidden" id="groupId" value="<%= group._id %>">
           <div class="modal-body">
-            <div class="mb-3">
-              <label class="form-label">สแกนสลิป (อัตโนมัติ)</label>
-              <div class="d-flex align-items-center gap-2">
+
+            <!-- Mode toggle -->
+            <div class="btn-group w-100 mb-4" role="group">
+              <input type="radio" class="btn-check" name="inputMode" id="modeSlip" autocomplete="off" checked>
+              <label class="btn btn-outline-primary" for="modeSlip">📷 สแกนสลิป</label>
+              <input type="radio" class="btn-check" name="inputMode" id="modeManual" autocomplete="off">
+              <label class="btn btn-outline-primary" for="modeManual">✏️ กรอกข้อมูล</label>
+            </div>
+
+            <!-- Slip mode -->
+            <div id="slipSection">
+              <div class="border rounded p-3 text-center bg-light mb-3" id="slipDropArea" style="cursor:pointer;" onclick="document.getElementById('slipUpload').click()">
                 <input type="file" id="slipUpload" accept="image/*" class="d-none">
-                <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('slipUpload').click()">
-                  📷 อัปโหลดสลิป
-                </button>
-                <span id="ocrStatus" class="text-muted small"></span>
+                <div id="slipPlaceholder">
+                  <div style="font-size:2.5rem;">📷</div>
+                  <div class="text-muted">คลิกเพื่ออัปโหลดสลิป</div>
+                  <small class="text-muted">รองรับ JPG, PNG</small>
+                </div>
+                <div id="slipPreview" class="d-none">
+                  <img id="slipImg" src="" alt="slip preview" style="max-height:160px; border-radius:8px;">
+                </div>
               </div>
-              <div id="slipPreview" class="mt-2 d-none">
-                <img id="slipImg" src="" alt="slip preview" style="max-height:120px; border-radius:8px; border:1px solid #ddd;">
+              <div id="ocrStatus" class="text-center small mb-3"></div>
+              <div class="mb-3">
+                <label for="amountSlip" class="form-label">ยอดรวม (บาท)</label>
+                <input type="number" class="form-control" id="amountSlip" placeholder="อ่านจากสลิปอัตโนมัติ" step="0.01" min="0">
+                <small class="text-muted">แก้ไขได้ถ้าตัวเลขไม่ถูกต้อง</small>
               </div>
             </div>
 
+            <!-- Manual mode -->
+            <div id="manualSection" class="d-none">
+              <div class="mb-3">
+                <label for="amountManual" class="form-label">ยอดรวม (บาท)</label>
+                <input type="number" class="form-control" id="amountManual" placeholder="0.00" step="0.01" min="0">
+              </div>
+            </div>
+
+            <!-- Common fields -->
             <div class="mb-3">
               <label for="description" class="form-label">รายละเอียด</label>
               <input type="text" class="form-control" id="description" name="description" placeholder="เช่น อาหาร, ที่พัก" required>
-            </div>
-
-            <div class="mb-3">
-              <label for="amount" class="form-label">ยอดรวม (บาท)</label>
-              <input type="number" class="form-control" id="amount" name="amount" placeholder="0.00" step="0.01" min="0" required>
             </div>
 
             <div class="mb-3">

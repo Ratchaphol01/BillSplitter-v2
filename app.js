@@ -38,10 +38,9 @@ const sessionConfig = {
 };
 
 // Use MongoDB store for sessions in production
-if (process.env.NODE_ENV === 'production' || process.env.MONGODB_URI) {
-  const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/final';
-  sessionConfig.store = MongoStore.create({
-    mongoUrl: mongoUri,
+if (process.env.MONGODB_URI) {
+  sessionConfig.store = new MongoStore({
+    mongoUrl: process.env.MONGODB_URI,
     touchAfter: 24 * 3600
   });
 }

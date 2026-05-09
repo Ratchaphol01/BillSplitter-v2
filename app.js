@@ -1,41 +1,18 @@
 const express = require('express');
-const mongoose = require('mongoose');
+
 const expressSession = require('express-session');
+
 const flash = require('connect-flash');
+
 const path = require('path');
 
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
-
 const authRoutes = require('./routes/auth');
+
 const expenseRoutes = require('./routes/expense');
 
-mongoose.set('strictQuery', false);
+const apiRoutes = require('./routes/api');
 
-const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/final';
 const sessionSecret = process.env.SESSION_SECRET || 'your-secret-key-change-in-production';
-
-const mongooseState = global.mongooseState || (global.mongooseState = { conn: null, promise: null });
-
-async function connectToDatabase() {
-  if (mongooseState.conn) {
-    return mongooseState.conn;
-  }
-
-  if (!mongooseState.promise) {
-    mongooseState.promise = mongoose.connect(mongoURI).then((mongooseInstance) => {
-      mongooseState.conn = mongooseInstance.connection;
-      return mongooseState.conn;
-    });
-  }
-
-  return mongooseState.promise;
-}
-
-connectToDatabase()
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.log('MongoDB connection error:', err));
 
 const app = express();
 
@@ -75,6 +52,8 @@ app.get('/register', (req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/expense', expenseRoutes);
+
+app.use('/api', apiRoutes);
 
 app.use((req, res) => {
   res.status(404).render('404', { message: 'หน้าที่ค้นหาไม่พบ' });

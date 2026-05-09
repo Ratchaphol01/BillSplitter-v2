@@ -2,6 +2,8 @@ const express = require('express');
 
 const expressSession = require('express-session');
 
+const MongoStore = require('connect-mongo');
+
 const flash = require('connect-flash');
 
 const path = require('path');
@@ -22,16 +24,29 @@ if (process.env.NODE_ENV === 'production') {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(expressSession({
+
+const sessionConfig = {
   secret: sessionSecret,
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24
+    maxAge: 1000 * 60 * 60 * 24,
+    sameSite: 'lax'
   }
-}));
+};
+
+// Use MongoDB store for sessions in production
+if (process.env.NODE_ENV === 'production' || process.env.MONGODB_URI) {
+  const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/final';
+  sessionConfig.store = MongoStore.create({
+    mongoUrl: mongoUri,
+    touchAfter: 24 * 3600
+  });
+}
+
+app.use(expressSession(sessionConfig));
 app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
 

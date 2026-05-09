@@ -6,7 +6,7 @@ const router = express.Router();
 // Middleware to check if user is logged in
 const isLoggedIn = (req, res, next) => {
   if (!req.session.userId) {
-    return res.redirect('/');
+    return res.redirect('/login');
   }
   next();
 };

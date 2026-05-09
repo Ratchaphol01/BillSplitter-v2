@@ -8,60 +8,171 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="home-page">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark home-navbar">
     <div class="container">
-      <a class="navbar-brand" href="/">💰 Bill Splitter</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <a class="navbar-brand fw-bold" href="/">💰 Bill Splitter</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav ms-auto align-items-center gap-2">
           <li class="nav-item">
             <a class="nav-link" href="/login">เข้าสู่ระบบ</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/register">ลงทะเบียน</a>
+            <a class="btn btn-light btn-sm px-4 rounded-pill fw-semibold" href="/register">ลงทะเบียน</a>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <div class="hero-section">
-    <div class="container text-center">
-      <h1 class="display-4 fw-bold">💰 Bill Splitter</h1>
-      <p class="lead">วิธีง่าย ๆ ในการแชร์ค่าใช้จ่ายกับเพื่อน</p>
-      <div class="mt-4">
-        <a href="/login" class="btn btn-primary btn-lg me-2">เข้าสู่ระบบ</a>
-        <a href="/register" class="btn btn-light btn-lg">ลงทะเบียน</a>
-      </div>
-    </div>
-  </div>
+  <!-- Hero -->
+  <section class="hero-section">
+    <div class="hero-blob hero-blob-1"></div>
+    <div class="hero-blob hero-blob-2"></div>
 
-  <div class="features-section py-5">
     <div class="container">
-      <div class="row">
-        <div class="col-md-4 mb-4">
-          <div class="feature-card">
-            <h3>📊 ง่ายต่อการใช้</h3>
-            <p>ใส่ยอดรวม เลือกคนหาร แล้วเสร็จ</p>
+      <div class="row align-items-center hero-row">
+
+        <!-- Left text -->
+        <div class="col-lg-6 hero-text">
+          <span class="hero-badge">✨ ฟรี · ไม่ต้องดาวน์โหลด</span>
+          <h1 class="hero-title">หารบิลกับเพื่อน<br>ง่ายแค่ไม่กี่คลิก</h1>
+          <p class="hero-sub">ไม่ต้องคำนวณเอง — แค่อัปโหลดสลิป<br>ระบบจัดการและสรุปยอดให้ทุกอย่าง</p>
+          <div class="d-flex gap-3 flex-wrap">
+            <a href="/register" class="btn btn-light btn-hero-primary">เริ่มใช้งานฟรี →</a>
+            <a href="/login" class="btn btn-outline-light btn-hero-secondary">เข้าสู่ระบบ</a>
           </div>
         </div>
-        <div class="col-md-4 mb-4">
-          <div class="feature-card">
-            <h3>🧮 คำนวณอัตโนมัติ</h3>
-            <p>ระบบจะคำนวณว่าใครต้องจ่ายใครเท่าไหร่</p>
+
+        <!-- Right mockup -->
+        <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+          <div class="app-mockup">
+            <div class="mockup-titlebar">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green"></span>
+              <span class="mockup-title-text">ทริปทะเลหัวหิน</span>
+            </div>
+            <div class="mockup-body">
+              <div class="mockup-row">
+                <span>🍽️ อาหารเย็น</span><span class="mockup-amt">฿850</span>
+              </div>
+              <div class="mockup-row">
+                <span>🏨 โรงแรม</span><span class="mockup-amt">฿2,400</span>
+              </div>
+              <div class="mockup-row">
+                <span>⛽ น้ำมัน</span><span class="mockup-amt">฿320</span>
+              </div>
+              <div class="mockup-sep"></div>
+              <div class="mockup-summary-label">สรุปยอด</div>
+              <div class="mockup-row settle">
+                <span>🧑 มิน ต้องโอนให้ บิ๊ก</span>
+                <span class="mockup-settle-amt">฿1,190</span>
+              </div>
+              <div class="mockup-qr-btn">📱 สร้าง QR PromptPay</div>
+            </div>
           </div>
         </div>
-        <div class="col-md-4 mb-4">
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Pills -->
+  <section class="pills-section">
+    <div class="container">
+      <div class="pills-row">
+        <div class="pill-item">📷 สแกนสลิปอัตโนมัติ</div>
+        <div class="pill-item">🧮 คำนวณให้เอง</div>
+        <div class="pill-item">📱 QR PromptPay</div>
+        <div class="pill-item">👥 จัดการหลายกลุ่ม</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features-section py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title">ทำไมต้อง Bill Splitter?</h2>
+        <p class="section-sub">ครบทุกฟีเชอร์ที่ต้องการ ใช้งานง่าย ไม่ต้องลงแอป</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
           <div class="feature-card">
-            <h3>👥 จัดกลุ่มค่าใช้จ่าย</h3>
-            <p>สร้างกลุ่มสำหรับการเดินทาง วันเกิด ฯลฯ</p>
+            <div class="feature-icon-wrap">📷</div>
+            <h5 class="feature-title">สแกนสลิปอัตโนมัติ</h5>
+            <p class="feature-desc">อัปโหลดสลิปโอนเงิน ระบบอ่านยอดให้ด้วย OCR รองรับหลายรูปพร้อมกัน</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon-wrap">🧮</div>
+            <h5 class="feature-title">คำนวณอัจฉริยะ</h5>
+            <p class="feature-desc">คำนวณว่าใครต้องจ่ายใครเท่าไหร่ โดยอัตโนมัติ แม่นยำ ไม่ต้องนั่งบวกเลขเอง</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon-wrap">📱</div>
+            <h5 class="feature-title">QR PromptPay ในแอป</h5>
+            <p class="feature-desc">สร้าง QR PromptPay ได้เลยในแอป สแกนจ่ายได้ทันทีโดยไม่ต้องออกไปที่อื่น</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="steps-section py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title">วิธีใช้งาน</h2>
+        <p class="section-sub">3 ขั้นตอนง่าย ๆ</p>
+      </div>
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-4 col-sm-6">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <h5 class="step-title">สร้างกลุ่ม</h5>
+            <p class="step-desc">สร้างกลุ่มแล้วเพิ่มสมาชิก ไม่ว่าจะเที่ยว กินข้าว หรืองานเลี้ยง</p>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <h5 class="step-title">บันทึกค่าใช้จ่าย</h5>
+            <p class="step-desc">อัปโหลดสลิปหรือกรอกยอดเอง แล้วเลือกว่าใครหารบ้าง</p>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <h5 class="step-title">ดูสรุปและจ่าย</h5>
+            <p class="step-desc">ระบบสรุปยอดและสร้าง QR PromptPay ให้จ่ายได้ทันที</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section text-center py-5">
+    <div class="container">
+      <h2 class="cta-title">พร้อมเริ่มหารบิลแล้วหรือยัง?</h2>
+      <p class="cta-sub">ฟรี ไม่มีโฆษณา ไม่ต้องดาวน์โหลดแอป</p>
+      <a href="/register" class="btn btn-light btn-lg px-5 rounded-pill fw-bold cta-btn">สมัครใช้งานฟรี →</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="home-footer text-center py-4">
+    <p class="mb-0">© 2025 Bill Splitter · made with ❤️</p>
+  </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <script src="/js/darkmode.js"></script>

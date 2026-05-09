@@ -2,11 +2,13 @@ const express = require('express');
 
 const expressSession = require('express-session');
 
-const MongoStore = require('connect-mongo');
+const { MongoStore } = require('connect-mongo');
 
 const flash = require('connect-flash');
 
 const path = require('path');
+
+const { clientPromise } = require('./db');
 
 const authRoutes = require('./routes/auth');
 
@@ -15,8 +17,6 @@ const expenseRoutes = require('./routes/expense');
 const apiRoutes = require('./routes/api');
 
 const sessionSecret = process.env.SESSION_SECRET || 'your-secret-key-change-in-production';
-
-const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/final';
 
 const app = express();
 
@@ -32,7 +32,7 @@ const sessionConfig = {
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: mongoURI,
+    clientPromise,
     ttl: 60 * 60 * 24
   }),
   cookie: {

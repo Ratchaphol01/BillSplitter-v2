@@ -2,8 +2,6 @@ const express = require('express');
 
 const expressSession = require('express-session');
 
-const MongoStore = require('connect-mongo');
-
 const flash = require('connect-flash');
 
 const path = require('path');
@@ -36,14 +34,6 @@ const sessionConfig = {
     sameSite: 'lax'
   }
 };
-
-// Use MongoDB store for sessions in production
-if (process.env.MONGODB_URI) {
-  sessionConfig.store = new MongoStore({
-    mongoUrl: process.env.MONGODB_URI,
-    touchAfter: 24 * 3600
-  });
-}
 
 app.use(expressSession(sessionConfig));
 app.use(flash());

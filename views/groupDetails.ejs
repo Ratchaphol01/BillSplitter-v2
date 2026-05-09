@@ -130,6 +130,20 @@
           <input type="hidden" id="groupId" value="<%= group._id %>">
           <div class="modal-body">
             <div class="mb-3">
+              <label class="form-label">สแกนสลิป (อัตโนมัติ)</label>
+              <div class="d-flex align-items-center gap-2">
+                <input type="file" id="slipUpload" accept="image/*" class="d-none">
+                <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('slipUpload').click()">
+                  📷 อัปโหลดสลิป
+                </button>
+                <span id="ocrStatus" class="text-muted small"></span>
+              </div>
+              <div id="slipPreview" class="mt-2 d-none">
+                <img id="slipImg" src="" alt="slip preview" style="max-height:120px; border-radius:8px; border:1px solid #ddd;">
+              </div>
+            </div>
+
+            <div class="mb-3">
               <label for="description" class="form-label">รายละเอียด</label>
               <input type="text" class="form-control" id="description" name="description" placeholder="เช่น อาหาร, ที่พัก" required>
             </div>
